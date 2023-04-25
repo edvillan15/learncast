@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learn-server-deployment
+  namespace: learning
+  labels:
+    app: learn-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: learn-server
+  template:
+    metadata:
+      labels:
+        app: learn-server
+    spec:
+      containers:
+        - image: meetlily/educator:v2
+          imagePullPolicy: "IfNotPresent"
+          name: learn-server
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: NODE_ENV
+            value: "production"
+          - name: VITE_APP_TITLE
+            value: "Learn"
+          ports:
+            - containerPort: 6000
+          resources: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learn-server-service # Sets service name
+  namespace: learning
+  labels:
+    app: learn-server # Labels and Selectors
+spec:
+  type: ClusterIP # Sets service type
+  ports:
+    - name: learn-server
+      port: 6000 # Sets port to run the learn application
+      targetPort: 6000
+    - name: learn-preview
+      port: 4000 # Sets port to run the learn application
+      targetPort: 4000
+  selector:
+    app: learn-server
+
+
+
+

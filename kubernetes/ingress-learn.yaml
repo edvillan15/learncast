@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: learn-ingress
+  namespace: learning
+spec:
+  tls:
+  - hosts:
+      - learn.meetlily.org
+    secretName: meetlily-org-tls
+  defaultBackend:
+    service:
+      name: learn-server-service
+      port:
+        number: 6000
+  rules:
+    - host: "learn.meetlily.org"
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: learn-server-service
+              port:
+                number: 6000
+   
+    
